@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
-//testing new
+
 const MongoClient = require('mongodb').MongoClient;
 const url = process.env.MONGO_URL;
 
