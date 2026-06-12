@@ -2,9 +2,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 // testing
 const MongoClient = require('mongodb').MongoClient;
-const url = process.env.MONGO_URL;
+const url = process.env.MONGODB_URI;
 
-const dbName = process.env.MONGO_DB_NAME;
 let db;
 
 const connectToDatabase = (callback) => {
@@ -12,7 +11,7 @@ const connectToDatabase = (callback) => {
         callback(null, db);
     }
     MongoClient.connect(url).then(client => {
-        db = client.db(dbName);
+        db = client.db('movie_api_db');
         callback(null, db);
     }).catch(err => {
         console.error('Failed to connect to the database:', err);

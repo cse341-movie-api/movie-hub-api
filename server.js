@@ -19,7 +19,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-mongodb.initDb((err) => {
+mongodb.connectToDatabase((err) => {
     if (err) {
         console.log(err);
     } else {
