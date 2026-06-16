@@ -5,7 +5,7 @@ const { ObjectId } = require('mongodb');
  * @description Retrieve all movies
  * @route GET /movies
  */
-const getAllMovies = async (req, res) => {
+const getAllMovies = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
@@ -13,7 +13,7 @@ const getAllMovies = async (req, res) => {
 
     res.status(200).json(movies);
   } catch (error) {
-    res.status(404).json(error);
+    next(error);
   }
 };
 
@@ -21,7 +21,7 @@ const getAllMovies = async (req, res) => {
  * @description Retrieve a single movie using an id
  * @route GET /movies/:id
  */
-const getOneMovie = async (req, res) => {
+const getOneMovie = async (req, res, next) => {
   const id = req.params.id;
   try {
     const db = getDb();
@@ -30,7 +30,7 @@ const getOneMovie = async (req, res) => {
 
     res.status(200).json(movie);
   } catch (error) {
-    res.status(500).json(error);
+    next(error);
   }
 };
 
