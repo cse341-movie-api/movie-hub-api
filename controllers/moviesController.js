@@ -33,7 +33,7 @@ const getOneMovie = async (req, res) => {
     res.status(500).json(error);
   }
 };
-const createMovie = async (req,res) => {
+const createMovie = async (req,res, next) => {
   const movie = {
     title: req.body.title,
     year: req.body.title,
@@ -55,12 +55,13 @@ const createMovie = async (req,res) => {
                 return;
             } 
   } catch (error) {
-    return res.status(500).json(error);
+    next(error);
   }
 }
 
 const updateMovie = async (req,res) => {
   const id = req.params.id;
+
 }
 const deteleMovie = async (req,res) => {
   const id = req.params.id;
