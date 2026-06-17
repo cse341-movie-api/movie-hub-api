@@ -26,7 +26,7 @@ const getOneMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const result = await collection.findOne(new ObjectId(id));
+    const result = await collection.findOne({ _id: new ObjectId(id) });
 
     if (!result) {
       return res.status(404).json({ error: 'Movie not found.' });
@@ -64,7 +64,7 @@ const createMovie = async (req, res, next) => {
     const result = await collection.insertOne(movie);
 
     const id = new ObjectId(result.insertedId);
-    const newMovie = await collection.findOne(id);
+    const newMovie = await collection.findOne({ _id: id });
     return res.status(201).json(newMovie);
   } catch (error) {
     next(error);
@@ -77,7 +77,7 @@ const createMovie = async (req, res, next) => {
  */
 const updateMovie = async (req, res, next) => {
   // TODO: Add validation
-  const id = new ObjectId(req.params.id);
+  const id = req.params.id;
 
   const movie = {
     title: req.body.title,
@@ -96,7 +96,10 @@ const updateMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const result = await collection.updateOne({ _id: id }, { $set: movie });
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: movie },
+    );
     console.log(result);
 
     if (result.matchedCount === 0) {
@@ -104,7 +107,7 @@ const updateMovie = async (req, res, next) => {
     }
 
     // QUESTION: Pass 204 (no body) or the updated resource?
-    const updatedMovie = await collection.findOne(id);
+    const updatedMovie = await collection.findOne({ _id: new ObjectId(id) });
     return res.status(200).json(updatedMovie);
   } catch (error) {
     next(error);
@@ -115,13 +118,13 @@ const updateMovie = async (req, res, next) => {
  * @description Delete a movie resource
  * @route DELETE /movies/:id
  */
-const deteleMovie = async (req, res, next) => {
-  const id = new ObjectId(req.params.id);
+const deleteMovie = async (req, res, next) => {
+  const id = req.params.id;
 
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const result = await collection.deleteOne({ _id: id });
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'Movie not found.' });
@@ -138,5 +141,5 @@ module.exports = {
   getOneMovie,
   createMovie,
   updateMovie,
-  deteleMovie,
+  deleteMovie,
 };

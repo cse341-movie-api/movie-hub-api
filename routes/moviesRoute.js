@@ -9,6 +9,6 @@ router.post('/', /* #swagger.tags = ['Movies] */ controller.createMovie);
 
 router.put('/:id', /* #swagger.tags = ['Movies] */ controller.updateMovie);
 
-router.delete('/:id', /* #swagger.tags = ['Movies'] */ controller.deteleMovie);
+router.delete('/:id', /* #swagger.tags = ['Movies'] */ controller.deleteMovie);
 
 module.exports = router;
