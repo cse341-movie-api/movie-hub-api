@@ -81,7 +81,7 @@ const updateMovie = async (req, res, next) => {
 
   const movie = {
     title: req.body.title,
-    year: req.body.title,
+    year: req.body.year,
     plot: req.body.plot,
     genres: req.body.genres,
     runtime: req.body.runtime,
@@ -106,7 +106,6 @@ const updateMovie = async (req, res, next) => {
       return res.status(404).json({ error: 'Movie not found.' });
     }
 
-    // QUESTION: Pass 204 (no body) or the updated resource?
     const updatedMovie = await collection.findOne({ _id: new ObjectId(id) });
     return res.status(200).json(updatedMovie);
   } catch (error) {
