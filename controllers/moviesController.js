@@ -61,15 +61,49 @@ const createMovie = async (req,res, next) => {
 
 const updateMovie = async (req,res) => {
   const id = req.params.id;
+  const movie = {
+    title: req.body.title,
+    year: req.body.title,
+    plot: req.body.plot,
+    genres: req.body.genres,
+    runtime: req.body.runtime,
+    rated: req.body.rated,
+    cast: req.body.cast,
+    poster: req.body.poster,
+    languages: req.body.languages,
+    imdb: req.body.imdb,
+    rotten_tomatoes: req.body.rotten_tomatoes 
+  }
+  try {
+    const PUT = await getDb().collection('movies').replaceOne({ _id: id }, movie);
+        if (PUT.acknowledged) {
+            return res.status(204).json(PUT);
+
+        }
+  } catch (error) {
+    next(error);
+  }
 
 }
 const deteleMovie = async (req,res) => {
   const id = req.params.id;
+
+  try {
+    const DELETE = await mongodb.getDb().collection('movies').deleteOne({ _id: id });
+        if (DELETE.acknowledged) {
+            return res.status(204).json(DELETE);
+        }
+  } catch (error) {
+    next(error);
+  }
 }
 
 
 module.exports = {
   getAllMovies,
   getOneMovie,
-  createMovie
+  createMovie,
+  updateMovie,
+  deteleMovie
 };
+
