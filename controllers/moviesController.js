@@ -9,9 +9,9 @@ const getAllMovies = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const response = await collection.find().toArray();
+    const result = await collection.find().toArray();
 
-    res.status(200).json(response);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -26,13 +26,13 @@ const getOneMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const response = await collection.findOne(new ObjectId(id));
+    const result = await collection.findOne(new ObjectId(id));
 
-    if (!response) {
+    if (!result) {
       return res.status(404).json({ error: 'Movie not found.' });
     }
 
-    res.status(200).json(response);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -61,9 +61,9 @@ const createMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const response = await collection.insertOne(movie);
+    const result = await collection.insertOne(movie);
 
-    const id = new ObjectId(response.insertedId);
+    const id = new ObjectId(result.insertedId);
     const newMovie = await collection.findOne(id);
     return res.status(201).json(newMovie);
   } catch (error) {
@@ -96,10 +96,10 @@ const updateMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const response = await collection.updateOne({ _id: id }, { $set: movie });
-    console.log(response);
+    const result = await collection.updateOne({ _id: id }, { $set: movie });
+    console.log(result);
 
-    if (response.matchedCount === 0) {
+    if (result.matchedCount === 0) {
       return res.status(404).json({ error: 'Movie not found.' });
     }
 
@@ -121,9 +121,9 @@ const deteleMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const response = await collection.deleteOne({ _id: id });
+    const result = await collection.deleteOne({ _id: id });
 
-    if (response.deletedCount === 0) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'Movie not found.' });
     }
 
