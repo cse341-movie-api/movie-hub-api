@@ -9,9 +9,9 @@ const getAllMovies = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const movies = await collection.find({}).toArray();
+    const response = await collection.find().toArray();
 
-    res.status(200).json(movies);
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -26,14 +26,59 @@ const getOneMovie = async (req, res, next) => {
   try {
     const db = getDb();
     const collection = db.collection('movies');
-    const movie = await collection.findOne(new ObjectId(id));
+    const response = await collection.findOne(new ObjectId(id));
 
-    res.status(200).json(movie);
+    if (!response) {
+      return res.status(404).json({ error: 'Movie not found.' });
+    }
+
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }
 };
-const createMovie = async (req,res, next) => {
+
+/**
+ * @description Creates a new movie resource
+ * @route POST /movies
+ */
+const createMovie = async (req, res, next) => {
+  // TODO: Add validation
+  const movie = {
+    title: req.body.title,
+    year: req.body.year,
+    plot: req.body.plot,
+    genres: req.body.genres,
+    runtime: req.body.runtime,
+    rated: req.body.rated,
+    cast: req.body.cast,
+    poster: req.body.poster,
+    languages: req.body.languages,
+    imdb: req.body.imdb,
+    rotten_tomatoes: req.body.rotten_tomatoes,
+  };
+
+  try {
+    const db = getDb();
+    const collection = db.collection('movies');
+    const response = await collection.insertOne(movie);
+
+    const id = new ObjectId(response.insertedId);
+    const newMovie = await collection.findOne(id);
+    return res.status(201).json(newMovie);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @description Update a movie resource
+ * @route PUT /movies/:id
+ */
+const updateMovie = async (req, res, next) => {
+  // TODO: Add validation
+  const id = new ObjectId(req.params.id);
+
   const movie = {
     title: req.body.title,
     year: req.body.title,
@@ -45,65 +90,53 @@ const createMovie = async (req,res, next) => {
     poster: req.body.poster,
     languages: req.body.languages,
     imdb: req.body.imdb,
-    rotten_tomatoes: req.body.rotten_tomatoes 
-  }
+    rotten_tomatoes: req.body.rotten_tomatoes,
+  };
 
   try {
-    const POST = await getDb().collection('movies').insertOne(movie);
-            if (POST.acknowledged) {
-                res.status(201).json(POST);
-                return;
-            } 
+    const db = getDb();
+    const collection = db.collection('movies');
+    const response = await collection.updateOne({ _id: id }, { $set: movie });
+    console.log(response);
+
+    if (response.matchedCount === 0) {
+      return res.status(404).json({ error: 'Movie not found.' });
+    }
+
+    // QUESTION: Pass 204 (no body) or the updated resource?
+    const updatedMovie = await collection.findOne(id);
+    return res.status(200).json(updatedMovie);
   } catch (error) {
     next(error);
   }
-}
+};
 
-const updateMovie = async (req,res) => {
-  const id = req.params.id;
-  const movie = {
-    title: req.body.title,
-    year: req.body.title,
-    plot: req.body.plot,
-    genres: req.body.genres,
-    runtime: req.body.runtime,
-    rated: req.body.rated,
-    cast: req.body.cast,
-    poster: req.body.poster,
-    languages: req.body.languages,
-    imdb: req.body.imdb,
-    rotten_tomatoes: req.body.rotten_tomatoes 
-  }
+/**
+ * @description Delete a movie resource
+ * @route DELETE /movies/:id
+ */
+const deteleMovie = async (req, res, next) => {
+  const id = new ObjectId(req.params.id);
+
   try {
-    const PUT = await getDb().collection('movies').replaceOne({ _id: id }, movie);
-        if (PUT.acknowledged) {
-            return res.status(204).json(PUT);
+    const db = getDb();
+    const collection = db.collection('movies');
+    const response = await collection.deleteOne({ _id: id });
 
-        }
+    if (response.deletedCount === 0) {
+      return res.status(404).json({ error: 'Movie not found.' });
+    }
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
-
-}
-const deteleMovie = async (req,res) => {
-  const id = req.params.id;
-
-  try {
-    const DELETE = await mongodb.getDb().collection('movies').deleteOne({ _id: id });
-        if (DELETE.acknowledged) {
-            return res.status(204).json(DELETE);
-        }
-  } catch (error) {
-    next(error);
-  }
-}
-
+};
 
 module.exports = {
   getAllMovies,
   getOneMovie,
   createMovie,
   updateMovie,
-  deteleMovie
+  deteleMovie,
 };
-
