@@ -59,7 +59,7 @@ const postReview = async (req,res,next) => {
     }
 }
 const updateReview = async (req,res,next) => {
-    const id = new ObjectId(req.params.id);
+    const id = req.params.id;
     const review = {
         userId : new ObjectId(req.body.userId),
         movieId :new ObjectId(req.body.movieId),
@@ -74,7 +74,7 @@ const updateReview = async (req,res,next) => {
         const result = await mongodb
             .getDb()
             .collection(collection)
-            .replaceOne({_id:id},review);
+            .replaceOne({_id:new ObjectId(id)},review);
         
         if (result.acknowledged) {
             return res.status(204).json(result);
@@ -86,12 +86,12 @@ const updateReview = async (req,res,next) => {
     }
 }
 const deleteReview = async (req,res,next) => {
-    const id = new ObjectId(req.params.id);
+    const id = req.params.id;
     try {
         const result = await mongodb
             .getDb()
             .collection(collection)
-            .deleteOne({ _id: id });
+            .deleteOne({_id:new ObjectId(id)});
         
         if (result.acknowledged) {
             return res.status(204).json(result);
