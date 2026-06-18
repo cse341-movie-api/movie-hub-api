@@ -1,13 +1,25 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const mongodb = require('./db/connect');
 const port = process.env.PORT || 8080;
 const cors = require('cors');
-// const passport = require('./config/passport');
+const session = require('express-session');
+const passport = require('./config/passport');
 
 app.use(cors());
 app.use(express.json());
-// app.use(passport.initialize());
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'secret',
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', require('./routes/index.js'));
 
 app.use((err, req, res, next) => {
