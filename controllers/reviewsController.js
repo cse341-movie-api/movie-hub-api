@@ -27,7 +27,13 @@ const getOneReview = async (req,res,next) =>{
             .collection(collection)
             .findOne(new ObjectId(id));
             
+            
+        if (!result) {
+            return res.status(404).json({ error: 'The reviews is not found in the database' });
+        }else {
             res.status(200).json(result)
+        }
+        
     } catch (error) {
         next(error);
     }
@@ -75,11 +81,13 @@ const updateReview = async (req,res,next) => {
             .getDb()
             .collection(collection)
             .replaceOne({_id:new ObjectId(id)},review);
+        if (result.matchedCount === 0){
+            return res.status(404).json({error: 'the review could not be found in the database'})
         
-        if (result.acknowledged) {
+        }else if (result.acknowledged) {
             return res.status(204).json(result);
-
         }
+
     } catch (error) {
         next(error);
         
@@ -92,8 +100,10 @@ const deleteReview = async (req,res,next) => {
             .getDb()
             .collection(collection)
             .deleteOne({_id:new ObjectId(id)});
+        if (result.deletedCount === 0){
+            return res.status(404).json({error: 'the review could not be found in the database'}) 
         
-        if (result.acknowledged) {
+        }else if (result.acknowledged) {
             return res.status(204).json(result);
         }
     } catch (error) {
