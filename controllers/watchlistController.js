@@ -1,29 +1,34 @@
 const { ObjectId } = require('mongodb');
 const mongodb = require('../db/connect');
+const db = mongodb.getDb();
 
-const COLLECTION_NAME = 'watchlist';
+const collection = db.collection('watchlist');
 
 // Get all watchlist items
-const getAllWatchlistItems = async (req, res) => {
+const getAllWatchlistItems = async (req, res, next) => { // Add next to the function declaration
   try {
-    const result = await mongodb.getDb().db().collection(COLLECTION_NAME).find();
-        result.toArray().then((lists) => {
-      res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(lists);
-    });
+    const result = await mongodb
+        .getDb()
+        .db()
+        .collection(collection)
+        .find();
+
+    const lists = await result.toArray();
+
+    return res.status(200).json(lists);
   } catch (error) {
-    res.status(500).json({ message: error.message || 'An error occurred while retrieving the watchlist.' });
+    next(error); // Pass unexpected errors to the global error handler
   }
 };
 
 // Get a single watchlist item by ID
-const getWatchlistItemById = async (req, res) => {
+const getWatchlistItemById = async (req, res, next) => { // Add next to the function declaration
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: 'Must use a valid watchlist ID to find an item.' });
     }
     const watchlistId = new ObjectId(req.params.id);
-    const result = await mongodb.getDb().db().collection(COLLECTION_NAME).find({ _id: watchlistId });
+    const result = await mongodb.getDb().db().collection(collection).find({ _id: watchlistId });
     
     result.toArray().then((lists) => {
       if (lists.length === 0) {
@@ -33,12 +38,12 @@ const getWatchlistItemById = async (req, res) => {
       res.status(200).json(lists[0]);
     });
   } catch (error) {
-    res.status(500).json({ message: error.message || 'An error occurred while retrieving the item.' });
+    next(error); // Pass unexpected errors to the global error handler
   }
 };
 
 // Create a new watchlist item
-const createWatchlistItem = async (req, res) => {
+const createWatchlistItem = async (req, res, next) => { // Add next to the function declaration
   try {
     const watchlistItem = {
       userId: req.body.userId,
@@ -50,7 +55,7 @@ const createWatchlistItem = async (req, res) => {
       notes: req.body.notes || ''
     };
 
-    const response = await mongodb.getDb().db().collection(COLLECTION_NAME).insertOne(watchlistItem);
+    const response = await mongodb.getDb().db().collection(collection).insertOne(watchlistItem);
     if (response.acknowledged) {
       res.status(201).json({
         message: 'Watchlist item created successfully.',
@@ -60,12 +65,12 @@ const createWatchlistItem = async (req, res) => {
       res.status(500).json({ message: 'Error occurred while creating the watchlist item.' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message || 'Failed to create watchlist item.' });
+    next(error); // Pass unexpected errors to the global error handler
   }
 };
 
 // Update an existing watchlist item
-const updateWatchlistItem = async (req, res) => {
+const updateWatchlistItem = async (req, res, next) => { // Add next to the function declaration
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: 'Must use a valid watchlist ID to update an item.' });
@@ -82,36 +87,56 @@ const updateWatchlistItem = async (req, res) => {
       notes: req.body.notes
     };
 
-    const response = await mongodb.getDb().db().collection(COLLECTION_NAME)
-      .replaceOne({ _id: watchlistId }, updatedItem);
+    const response = await mongodb
+        .getDb()
+        .db()
+        .collection(collection)
+        .updateOne(
+            { _id: watchlistId },
+            {
+                $set: {
+                userId: req.body.userId,
+                movieId: req.body.movieId,
+                dateAdded: req.body.dateAdded,
+                status: req.body.status,
+                priority: req.body.priority,
+                reminderSet: req.body.reminderSet,
+                notes: req.body.notes
+                }
+            }
+        );
 
-    if (response.modifiedCount > 0) {
-      res.status(204).send();
-    } else {
-      res.status(404).json({ message: 'No item found with that ID or no new data provided to update.' });
+    if (response.matchedCount === 0) {
+        return res.status(404).json({
+            message: 'Watchlist item not found.'
+        });
     }
+
+    return res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: error.message || 'Failed to update watchlist item.' });
+    next(error); // Pass unexpected errors to the global error handler
   }
 };
 
 // Delete a watchlist item
-const deleteWatchlistItem = async (req, res) => {
+const deleteWatchlistItem = async (req, res, next) => { // Add next to the function declaration
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: 'Must use a valid watchlist ID to delete an item.' });
     }
     const watchlistId = new ObjectId(req.params.id);
-    const response = await mongodb.getDb().db().collection(COLLECTION_NAME)
+    const response = await mongodb.getDb().db().collection(collection)
       .deleteOne({ _id: watchlistId });
 
-    if (response.deletedCount > 0) {
-      res.status(200).json({ message: 'Watchlist item deleted successfully.' });
-    } else {
-      res.status(404).json({ message: 'Watchlist item not found.' });
+    if (response.deletedCount === 0) {
+        return res.status(404).json({
+            message: 'Watchlist item not found.'
+        });
     }
+
+    return res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: error.message || 'Failed to delete watchlist item.' });
+    next(error); // Pass unexpected errors to the global error handler
   }
 };
 
