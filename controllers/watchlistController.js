@@ -8,7 +8,8 @@ const collection = db.collection('watchlist');
 const getAllWatchlistItems = async (req, res, next) => { // Add next to the function declaration
   try {
     const result = await mongodb
-        .collection(collection)
+        .getDb()
+        .collection('watchlist')
         .find();
 
     const lists = await result.toArray();
@@ -27,16 +28,14 @@ const getWatchlistItemById = async (req, res, next) => { // Add next to the func
     }
     const watchlistId = new ObjectId(req.params.id);
     const result = await mongodb
-        .collection(collection)
-        .find({ _id: watchlistId });
+        .getDb()
+        .collection('watchlist')
+        .findOne({ _id: watchlistId });
     
-    result.toArray().then((lists) => {
-      if (lists.length === 0) {
-        return res.status(404).json({ message: 'Watchlist item not found.' });
-      }
-      res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(lists[0]);
-    });
+    if (!result) {
+      return res.status(404).json({ message: 'Watchlist item not found.' });
+    }
+        res.status(200).json(result);
   } catch (error) {
     next(error); // Pass unexpected errors to the global error handler
   }
@@ -56,12 +55,13 @@ const createWatchlistItem = async (req, res, next) => { // Add next to the funct
     };
 
     const response = await mongodb
-        .collection(collection)
+        .getDb()
+        .collection('watchlist')
         .insertOne(watchlistItem);
         
     if (response.acknowledged) {
         const id = new ObjectId(response.insertedId);
-        const newWatchlistItem = await db.collection(collection).getOne({ _id: id });
+        const newWatchlistItem = await db.collection('watchlist').findOne({ _id: id });
         res.status(201).json(newWatchlistItem);
 
     } else {
@@ -91,7 +91,8 @@ const updateWatchlistItem = async (req, res, next) => { // Add next to the funct
     };
 
     const response = await mongodb
-        .collection(collection)
+        .getDb()
+        .collection('watchlist')
         .updateOne(
             { _id: watchlistId },
             {
@@ -127,7 +128,8 @@ const deleteWatchlistItem = async (req, res, next) => { // Add next to the funct
     }
     const watchlistId = new ObjectId(req.params.id);
     const response = await mongodb
-        .collection(collection)
+        .getDb()
+        .collection('watchlist')
         .deleteOne({ _id: watchlistId });
 
     if (response.deletedCount === 0) {
