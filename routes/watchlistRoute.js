@@ -8,6 +8,9 @@ router.get('/', /* #swagger.tags = ['Watchlist'] */ watchlistController.getAllWa
 // GET a single watchlist item by its unique ID
 router.get('/:id', /* #swagger.tags = ['Watchlist'] */ watchlistController.getWatchlistItemById);
 
+// GET watchlist items for a specific user
+router.get('/user/:userId', /* #swagger.tags = ['Watchlist'] */ watchlistController.getWatchlistItemsByUserId);
+
 // POST a new item to the watchlist
 router.post('/', /* #swagger.tags = ['Watchlist'] */ watchlistController.createWatchlistItem);
 
