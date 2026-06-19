@@ -8,8 +8,6 @@ const collection = db.collection('watchlist');
 const getAllWatchlistItems = async (req, res, next) => { // Add next to the function declaration
   try {
     const result = await mongodb
-        .getDb()
-        .db()
         .collection(collection)
         .find();
 
@@ -28,7 +26,9 @@ const getWatchlistItemById = async (req, res, next) => { // Add next to the func
       return res.status(400).json({ message: 'Must use a valid watchlist ID to find an item.' });
     }
     const watchlistId = new ObjectId(req.params.id);
-    const result = await mongodb.getDb().db().collection(collection).find({ _id: watchlistId });
+    const result = await mongodb
+        .collection(collection)
+        .find({ _id: watchlistId });
     
     result.toArray().then((lists) => {
       if (lists.length === 0) {
@@ -55,7 +55,10 @@ const createWatchlistItem = async (req, res, next) => { // Add next to the funct
       notes: req.body.notes || ''
     };
 
-    const response = await mongodb.getDb().db().collection(collection).insertOne(watchlistItem);
+    const response = await mongodb
+        .collection(collection)
+        .insertOne(watchlistItem);
+        
     if (response.acknowledged) {
       res.status(201).json({
         message: 'Watchlist item created successfully.',
@@ -88,8 +91,6 @@ const updateWatchlistItem = async (req, res, next) => { // Add next to the funct
     };
 
     const response = await mongodb
-        .getDb()
-        .db()
         .collection(collection)
         .updateOne(
             { _id: watchlistId },
@@ -125,8 +126,9 @@ const deleteWatchlistItem = async (req, res, next) => { // Add next to the funct
       return res.status(400).json({ message: 'Must use a valid watchlist ID to delete an item.' });
     }
     const watchlistId = new ObjectId(req.params.id);
-    const response = await mongodb.getDb().db().collection(collection)
-      .deleteOne({ _id: watchlistId });
+    const response = await mongodb
+        .collection(collection)
+        .deleteOne({ _id: watchlistId });
 
     if (response.deletedCount === 0) {
         return res.status(404).json({
