@@ -60,10 +60,10 @@ const createWatchlistItem = async (req, res, next) => { // Add next to the funct
         .insertOne(watchlistItem);
         
     if (response.acknowledged) {
-      res.status(201).json({
-        message: 'Watchlist item created successfully.',
-        watchlist_id: response.insertedId
-      });
+        const id = new ObjectId(response.insertedId);
+        const newWatchlistItem = await db.collection(collection).getOne({ _id: id });
+        res.status(201).json(newWatchlistItem);
+
     } else {
       res.status(500).json({ message: 'Error occurred while creating the watchlist item.' });
     }
