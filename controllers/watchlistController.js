@@ -1,8 +1,5 @@
 const { ObjectId } = require('mongodb');
 const mongodb = require('../db/connect');
-const db = mongodb.getDb();
-
-const collection = db.collection('watchlist');
 
 // Get all watchlist items
 const getAllWatchlistItems = async (req, res, next) => { // Add next to the function declaration
@@ -61,7 +58,10 @@ const createWatchlistItem = async (req, res, next) => { // Add next to the funct
         
     if (response.acknowledged) {
         const id = new ObjectId(response.insertedId);
-        const newWatchlistItem = await db.collection('watchlist').findOne({ _id: id });
+        const newWatchlistItem = await mongodb
+            .getDb()
+            .collection('watchlist')
+            .findOne({ _id: id });
         res.status(201).json(newWatchlistItem);
 
     } else {
