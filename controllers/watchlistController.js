@@ -114,7 +114,12 @@ const updateWatchlistItem = async (req, res, next) => { // Add next to the funct
         });
     }
 
-    return res.status(204).send();
+    const itemAfterUpdate = await mongodb
+        .getDb()
+        .collection('watchlist')
+        .findOne({ _id: watchlistId});
+
+    return res.status(200).send(itemAfterUpdate);
   } catch (error) {
     next(error); // Pass unexpected errors to the global error handler
   }
