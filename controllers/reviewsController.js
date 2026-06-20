@@ -25,7 +25,7 @@ const getOneReview = async (req,res,next) =>{
         const result = await mongodb
             .getDb()
             .collection(collection)
-            .findOne(new ObjectId(id));
+            .findOne({_id: new ObjectId(id)});
             
             
         if (!result) {
@@ -56,7 +56,8 @@ const postReview = async (req,res,next) => {
         .insertOne(review);
     
     if (result.acknowledged) {
-                res.status(201).json(result);
+        const createdReview = await db.collection(collection).findOne({ _id: result.insertedId });
+                res.status(201).json(createdReview);
                 return;
             }
 
@@ -85,7 +86,8 @@ const updateReview = async (req,res,next) => {
             return res.status(404).json({error: 'the review could not be found in the database'})
         
         }else if (result.acknowledged) {
-            return res.status(204).json(result);
+            const UpdatedReview = await db.collection(collection).findOne({ _id: result.insertedId });
+            return res.status(201).json(UpdatedReview);
         }
 
     } catch (error) {
@@ -104,7 +106,7 @@ const deleteReview = async (req,res,next) => {
             return res.status(404).json({error: 'the review could not be found in the database'}) 
         
         }else if (result.acknowledged) {
-            return res.status(204).json(result);
+            return res.status(204).send();
         }
     } catch (error) {
         next(error);
@@ -119,5 +121,3 @@ module.exports = {
     updateReview,
     deleteReview
 }
-
-/* */
