@@ -1,30 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('../config/passport');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 router.get('/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
+    /* #swagger.tags = ['Authentication'] */
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        session: false
+    })
 );
 
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/auth/status' }),
+    /* #swagger.tags = ['Authentication'] */
+    passport.authenticate('google', {
+        failureRedirect: '/auth/failure',
+        session: false
+    }),
     (req, res) => {
-        res.redirect('/auth/status');
+        const token = jwt.sign(
+            {
+                id: req.user.googleId,
+                email: req.user.email
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.json({
+            message: 'Authentication successful.',
+            token
+        });
     }
 );
 
-router.get('/status', (req, res) => {
-    res.json({
-        loggedIn: req.isAuthenticated(),
-        user: req.user || null
-    });
-});
-
-router.get('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) return next(err);
-        res.json({ message: 'Logged out successfully' });
-    });
-});
+router.get('/failure',
+    /* #swagger.tags = ['Authentication'] */
+    (req, res) => {
+        res.status(401).json({ message: 'Google authentication failed.' });
+    }
+);
 
 module.exports = router;
