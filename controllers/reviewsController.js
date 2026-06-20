@@ -38,6 +38,46 @@ const getOneReview = async (req,res,next) =>{
         next(error);
     }
 }
+const userReview = async (req,res,next) =>{
+    const userId = req.params.userId;
+    try {
+        const result = await mongodb
+            .getDb()
+            .collection(collection)
+            .find({userId: new ObjectId(userId)})
+            .toArray();
+            
+            
+        if (!result) {
+            return res.status(404).json({ error: 'The reviews is not found in the database' });
+        }else {
+            res.status(200).json(result)
+        }
+        
+    } catch (error) {
+        next(error);
+    }
+}
+const movieReview = async (req,res,next) =>{
+    const movieId = req.params.movieId;
+    try {
+        const result = await mongodb
+            .getDb()
+            .collection(collection)
+            .find({movieId: new ObjectId(movieId)})
+            .toArray();
+            
+            
+        if (!result) {
+            return res.status(404).json({ error: 'The reviews is not found in the database' });
+        }else {
+            res.status(200).json(result)
+        }
+        
+    } catch (error) {
+        next(error);
+    }
+}
 
 const postReview = async (req,res,next) => {
     const review = {
@@ -51,12 +91,12 @@ const postReview = async (req,res,next) => {
     }
     try {
         const result = await mongodb
-        .getDb()
+        .getDb('movie_api_db')
         .collection(collection)
         .insertOne(review);
     
     if (result.acknowledged) {
-        const createdReview = await db.collection(collection).findOne({ _id: result.insertedId });
+        const createdReview = await mongodb.getDb().collection(collection).findOne({ _id: result.insertedId });
                 res.status(201).json(createdReview);
                 return;
             }
@@ -86,7 +126,7 @@ const updateReview = async (req,res,next) => {
             return res.status(404).json({error: 'the review could not be found in the database'})
         
         }else if (result.acknowledged) {
-            const UpdatedReview = await db.collection(collection).findOne({ _id: result.insertedId });
+            const UpdatedReview = await mongodb.getDb().collection(collection).findOne({ _id: result.insertedId });
             return res.status(201).json(UpdatedReview);
         }
 
@@ -119,5 +159,7 @@ module.exports = {
     getOneReview,
     postReview,
     updateReview,
-    deleteReview
+    deleteReview,
+    userReview,
+    movieReview
 }
