@@ -1,6 +1,23 @@
 const { ObjectId } = require('mongodb');
 const mongodb = require('../db/connect');
 
+const getUserByEmail = async (req, res, next) => {
+    try {
+        const email = req.params.email;
+        if (!email) {
+            return res.status(400).json({ message: "Must provide a valid email address to find a user." });
+        }
+        const db = mongodb.getDb();
+        const result = await db.collection('users').findOne({ email: email });
+
+        if (!result) {
+            return res.status(404).json({ message: "No user profile was found with that email address." });
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
 
 const getAllUsers = async (req, res, next) => {
     try {
@@ -112,4 +129,4 @@ const deleteUser = async (req, res, next) => {
     }
 };
 
-module.exports = { getAllUsers, getOneUser, createUser, updateUser, deleteUser };
+module.exports = { getUserByEmail, getAllUsers, getOneUser, createUser, updateUser, deleteUser };
