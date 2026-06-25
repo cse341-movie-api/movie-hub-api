@@ -17,22 +17,27 @@ const getAllWatchlistItems = async (req, res, next) => { // Add next to the func
   }
 };
 
-// Get a single watchlist item by ID
-const getWatchlistItemById = async (req, res, next) => { // Add next to the function declaration
+// Get watchlist items for a specific user
+const getWatchlistItemsByUserId = async (req, res, next) => {
   try {
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Must use a valid watchlist ID to find an item.' });
+    const userId = req.params.userId;
+    if (!userId) {
+      return res.status(400).json({ message: 'Must provide a valid user ID to find watchlist items.' });
     }
-    const watchlistId = new ObjectId(req.params.id);
+
     const result = await mongodb
         .getDb()
         .collection('watchlist')
-        .findOne({ _id: watchlistId });
+        .find({ userId });
+
+    const items = await result.toArray();
     
-    if (!result) {
-      return res.status(404).json({ message: 'Watchlist item not found.' });
+    // Check if the array length is 0 (no items), if yes return 404 message
+    if (items.length === 0) {
+      return res.status(404).json({ message: 'No watchlist items were found for this user.' });
     }
-        res.status(200).json(result);
+    
+    return res.status(200).json(items);
   } catch (error) {
     next(error); // Pass unexpected errors to the global error handler
   }
