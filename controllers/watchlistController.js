@@ -43,27 +43,6 @@ const getWatchlistItemsByUserId = async (req, res, next) => {
   }
 };
 
-// Get watchlist items for a specific user
-const getWatchlistItemsByUserId = async (req, res, next) => {
-  try {
-    const userId = req.params.userId;
-    if (!userId) {
-      return res.status(400).json({ message: 'Must provide a valid user ID to find watchlist items.' });
-    }
-
-    const result = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .find({ userId });
-
-    const items = await result.toArray();
-
-    return res.status(200).json(items);
-  } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
-  }
-};
-
 // Create a new watchlist item
 const createWatchlistItem = async (req, res, next) => { // Add next to the function declaration
   try {
