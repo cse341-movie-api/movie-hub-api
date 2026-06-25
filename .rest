@@ -2,6 +2,7 @@
 # CONFIGURATION VARIABLES
 ########################################
 @localBaseUrl = http://localhost:8080
+@prodBaseUrl = https://movie-hub-api.onrender.com
 
 ////////////////////////
 // LOCAL HOST
@@ -62,7 +63,7 @@ Content-Type: application/json
 }
 
 ### DELETE A MOVIE
-DELETE {{localBaseUrl}}/movies/6a2202b14be80c66150f5454
+DELETE {{localBaseUrl}}/movies/6a3c38aeecc7db183386198d
 
 
 # ==========================================
@@ -75,11 +76,11 @@ Content-Type: application/json
 
 {
   "googleId": "109876543210987654321",
-  "displayName": "Jane Doe",
-  "email": "jane.doe@example.com",
-  "joinedDate": "2026-06-04T12:00:00Z",
+  "displayName": "Robert Forrester",
+  "email": "rforrester@example.com",
+  "joinedDate": "2026-07-04T12:00:00Z",
   "role": "user",
-  "location": "Rexburg, ID",
+  "location": "Seattle, WA",
   "preferences": {
     "favoriteGenre": "Sci-Fi",
     "notifications": true
@@ -204,4 +205,208 @@ Content-Type: application/json
 }
 
 ### DELETE A WATCHLIST ENTRY
-DELETE {{localBaseUrl}}/watchlist/665f8a3c2c3d4e5f6a7b8c9f
+DELETE {{localBaseUrl}}/watchlist/6a3daa171c28b1e5becd865b
+
+
+////////////////////////
+// PRODUCTION (RENDER)
+//////////////////////
+
+# ==========================================
+# MOVIES
+# ==========================================
+
+### CREATE A NEW MOVIE (Mission: Impossible)
+POST {{prodBaseUrl}}/movies
+Content-Type: application/json
+
+{
+  "title": "Mission: Impossible",
+  "year": 1996,
+  "plot": "An American secret agent, falsely accused of disloyalty, must discover and expose the real spy without the help of his organization.",
+  "genres": ["Action", "Adventure", "Thriller"],
+  "runtime": 110,
+  "rated": "PG-13",
+  "cast": ["Tom Cruise", "Jon Voight", "Emmanuelle Béart"],
+  "poster": "https://m.media-amazon.com/images/M/MV5BMTc3NjI2OTA1N15BMl5BanBnXkFtZTgwNzM3MTM5MTE@._V1_SY1000_SX677_AL_.jpg",
+  "languages": ["English", "French"],
+  "imdb": {
+    "rating": 7.1
+  },
+  "rotten_tomatoes": {
+    "tomato_meter": 67
+  }
+}
+
+### READ ALL MOVIES
+GET {{prodBaseUrl}}/movies
+
+### READ SINGLE MOVIE BY ID (Back to the Future)
+GET {{prodBaseUrl}}/movies/6a2202b14be80c66150f5454
+
+### UPDATE AN EXISTING MOVIE
+PUT {{prodBaseUrl}}/movies/6a2202b14be80c66150f5454
+Content-Type: application/json
+
+{
+  "title": "Back to the Future (Remastered Edition)",
+  "year": 1985,
+  "plot": "Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean built by scientist Doc Brown.",
+  "genres": ["Adventure", "Comedy", "Sci-Fi"],
+  "runtime": 116,
+  "rated": "PG",
+  "cast": ["Michael J. Fox", "Christopher Lloyd", "Lea Thompson"],
+  "poster": "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SY1000_SX677_AL_.jpg",
+  "languages": ["English"],
+  "imdb": {
+    "rating": 8.5
+  },
+  "rotten_tomatoes": {
+    "tomato_meter": 93
+  }
+}
+
+### DELETE A MOVIE
+DELETE {{prodBaseUrl}}/movies/6a3c38aeecc7db183386198d
+
+
+# ==========================================
+# USERS
+# ==========================================
+
+### CREATE A NEW USER
+POST {{prodBaseUrl}}/users
+Content-Type: application/json
+
+{
+  "googleId": "109876543210987654321",
+  "displayName": "Robert Forrester",
+  "email": "rforrester@example.com",
+  "joinedDate": "2026-07-04T12:00:00Z",
+  "role": "user",
+  "location": "Seattle, WA",
+  "preferences": {
+    "favoriteGenre": "Sci-Fi",
+    "notifications": true
+  }
+}
+
+### READ ALL USERS
+GET {{prodBaseUrl}}/users
+
+### READ SINGLE USER BY ID
+GET {{prodBaseUrl}}/users/665f8a1b2c3d4e5f6a7b8c9d
+
+### READ SINGLE USER BY EMAIL (Relational Lookup Route)
+GET {{prodBaseUrl}}/users/email/jane.doe@example.com
+
+### UPDATE A USER
+PUT {{prodBaseUrl}}/users/665f8a1b2c3d4e5f6a7b8c9d
+Content-Type: application/json
+
+{
+  "googleId": "109876543210987654321",
+  "displayName": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "joinedDate": "2026-06-04T12:00:00Z",
+  "role": "user",
+  "location": "Salt Lake City, UT",
+  "preferences": {
+    "favoriteGenre": "Sci-Fi",
+    "notifications": false
+  }
+}
+
+### DELETE A USER
+DELETE {{prodBaseUrl}}/users/665f8a1b2c3d4e5f6a7b8c9d
+
+
+# ==========================================
+# REVIEWS
+# ==========================================
+
+### CREATE A NEW CUSTOM USER REVIEW
+POST {{prodBaseUrl}}/reviews
+Content-Type: application/json
+
+{
+  "userId": "665f8a1b2c3d4e5f6a7b8c9d",
+  "movieId": "6a2202b14be80c66150f5454",
+  "rating": 5,
+  "reviewText": "An absolute classic! The storytelling is top-tier.",
+  "authorName": "Jane Doe",
+  "isSpoiler": false
+}
+
+### READ ALL SYSTEM REVIEWS
+GET {{prodBaseUrl}}/reviews
+
+### READ SINGLE REVIEW BY ID
+GET {{prodBaseUrl}}/reviews/665f8a2a2c3d4e5f6a7b8c9e
+
+### READ REVIEWS FOR A SPECIFIC MOVIE (Relational Filter Route)
+GET {{prodBaseUrl}}/reviews/movie/6a2202b14be80c66150f5454
+
+### READ REVIEWS WRITTEN BY A SPECIFIC USER (Relational Filter Route)
+GET {{prodBaseUrl}}/reviews/user/665f8a1b2c3d4e5f6a7b8c9d
+
+### UPDATE A REVIEWS ENTRY
+PUT {{prodBaseUrl}}/reviews/665f8a2a2c3d4e5f6a7b8c9e
+Content-Type: application/json
+
+{
+  "userId": "665f8a1b2c3d4e5f6a7b8c9d",
+  "movieId": "6a2202b14be80c66150f5454",
+  "rating": 4,
+  "reviewText": "Still fantastic upon rewatch, though some of the family paradox choices raise funny questions.",
+  "authorName": "Jane Doe",
+  "isSpoiler": false
+}
+
+### DELETE A REVIEW
+DELETE {{prodBaseUrl}}/reviews/665f8a2a2c3d4e5f6a7b8c9e
+
+
+# ==========================================
+# WATCHLISTS
+# ==========================================
+
+### CREATE A WATCHLIST ENTRY
+POST {{prodBaseUrl}}/watchlist
+Content-Type: application/json
+
+{
+  "userId": "665f8a1b2c3d4e5f6a7b8c9d",
+  "movieId": "6a2202b14be80c66150f5454",
+  "dateAdded": "2026-06-04T15:00:00Z",
+  "status": "planned",
+  "priority": "high",
+  "reminderSet": true,
+  "notes": "Looking forward to re-watching this one."
+}
+
+### READ GLOBAL SYSTEM WATCHLISTS
+GET {{prodBaseUrl}}/watchlist
+
+### READ SINGLE WATCHLIST ENTRY BY ID
+GET {{prodBaseUrl}}/watchlist/665f8a3c2c3d4e5f6a7b8c9f
+
+### READ WATCHLIST FOR A SPECIFIC USER (Relational Filter Route)
+GET {{prodBaseUrl}}/watchlist/user/665f8a1b2c3d4e5f6a7b8c9d
+
+### UPDATE A WATCHLIST ENTRY
+PUT {{prodBaseUrl}}/watchlist/665f8a3c2c3d4e5f6a7b8c9f
+Content-Type: application/json
+
+{
+  "userId": "665f8a1b2c3d4e5f6a7b8c9d",
+  "movieId": "6a2202b14be80c66150f5454",
+  "dateAdded": "2026-06-04T15:00:00Z",
+  "status": "completed",
+  "priority": "low",
+  "reminderSet": false,
+  "notes": "Movie night completely finished."
+}
+
+### DELETE A WATCHLIST ENTRY
+DELETE {{prodBaseUrl}}/watchlist/6a3daa171c28b1e5becd865b
