@@ -123,7 +123,7 @@ const deleteUser = async (req, res, next) => {
         if (result.deletedCount === 0) {
             return res.status(404).json({ message: "User not found. No user deleted." });
         }
-        return res.status(204).send();
+        return res.status(204).json();
     } catch (error) {
         next(error);
     }
