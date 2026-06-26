@@ -5,11 +5,11 @@ const watchlistController = require('../controllers/watchlistController');
 // GET all watchlist items
 router.get('/', /* #swagger.tags = ['Watchlist'] */ watchlistController.getAllWatchlistItems);
 
+// GET watchlist items for a specific user
+router.get('/user/:userId', /* #swagger.tags = ['Watchlist'] */ watchlistController.getWatchlistItemsByUserId);
+
 // GET a single watchlist item by its unique ID
 router.get('/:id', /* #swagger.tags = ['Watchlist'] */ watchlistController.getWatchlistItemById);
-
-// GET watchlist items for a specific user
-//router.get('/user/:userId', /* #swagger.tags = ['Watchlist'] */ watchlistController.getWatchlistItemsByUserId);
 
 // POST a new item to the watchlist
 router.post('/', /* #swagger.tags = ['Watchlist'] */ watchlistController.createWatchlistItem);

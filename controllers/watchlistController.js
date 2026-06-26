@@ -28,11 +28,38 @@ const getWatchlistItemById = async (req, res, next) => { // Add next to the func
         .getDb()
         .collection('watchlist')
         .findOne({ _id: watchlistId });
-    
+
     if (!result) {
       return res.status(404).json({ message: 'Watchlist item not found.' });
     }
-        res.status(200).json(result);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error); // Pass unexpected errors to the global error handler
+  }
+};
+
+// Get watchlist items for a specific user
+const getWatchlistItemsByUserId = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    if (!userId) {
+      return res.status(400).json({ message: 'Must provide a valid user ID to find watchlist items.' });
+    }
+
+    const result = await mongodb
+        .getDb()
+        .collection('watchlist')
+        .find({ userId });
+
+    const items = await result.toArray();
+    
+    // Check if the array length is 0 (no items), if yes return 404 message
+    if (items.length === 0) {
+      return res.status(404).json({ message: 'No watchlist items were found for this user.' });
+    }
+    
+    return res.status(200).json(items);
   } catch (error) {
     next(error); // Pass unexpected errors to the global error handler
   }
@@ -111,7 +138,7 @@ const updateWatchlistItem = async (req, res, next) => { // Add next to the funct
         .collection('watchlist')
         .findOne({ _id: watchlistId });
 
-    return res.status(204).json(itemAfterUpdate);
+    return res.status(200).json(itemAfterUpdate);
   } catch (error) {
     next(error); // Pass unexpected errors to the global error handler
   }
@@ -144,6 +171,7 @@ const deleteWatchlistItem = async (req, res, next) => { // Add next to the funct
 module.exports = {
   getAllWatchlistItems,
   getWatchlistItemById,
+  getWatchlistItemsByUserId,
   createWatchlistItem,
   updateWatchlistItem,
   deleteWatchlistItem

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const mongodb = require('./db/connect');
@@ -7,7 +9,9 @@ const cors = require('cors');
 
 app.use(cors());
 app.use(express.json());
+
 // app.use(passport.initialize());
+
 app.use('/', require('./routes/index.js'));
 
 app.use((err, req, res, next) => {
