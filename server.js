@@ -10,7 +10,7 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 app.use('/', require('./routes/index.js'));
 
