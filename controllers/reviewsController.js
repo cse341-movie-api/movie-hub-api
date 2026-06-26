@@ -28,7 +28,7 @@ const getOneReview = async (req,res,next) =>{
             .findOne({_id: new ObjectId(id)});
             
             
-        if (!result) {
+        if (result.length === 0) {
             return res.status(404).json({ error: 'The reviews is not found in the database' });
         }else {
             res.status(200).json(result)
@@ -48,7 +48,7 @@ const userReview = async (req,res,next) =>{
             .toArray();
             
             
-        if (!result) {
+        if (result.length === 0) {
             return res.status(404).json({ error: 'The reviews is not found in the database' });
         }else {
             res.status(200).json(result)
@@ -68,7 +68,7 @@ const movieReview = async (req,res,next) =>{
             .toArray();
             
             
-        if (!result) {
+        if (result.length === 0) {
             return res.status(404).json({ error: 'The reviews is not found in the database' });
         }else {
             res.status(200).json(result)
@@ -79,7 +79,7 @@ const movieReview = async (req,res,next) =>{
     }
 }
 
-const postReview = async (req,res,next) => {
+const createReview = async (req,res,next) => {
     const review = {
         userId : new ObjectId(req.body.userId),
         movieId :new ObjectId(req.body.movieId),
@@ -90,10 +90,8 @@ const postReview = async (req,res,next) => {
         isSpoiler: req.body.isSpoiler
     }
     try {
-        const result = await mongodb
-        .getDb('movie_api_db')
-        .collection(collection)
-        .insertOne(review);
+        const db = await mongodb.getDb();
+        const result = db.collection(collection).insertOne(review);
     
     if (result.acknowledged) {
         const createdReview = await mongodb.getDb().collection(collection).findOne({ _id: result.insertedId });
@@ -126,8 +124,8 @@ const updateReview = async (req,res,next) => {
             return res.status(404).json({error: 'the review could not be found in the database'})
         
         }else if (result.acknowledged) {
-            const UpdatedReview = await mongodb.getDb().collection(collection).findOne({ _id: result.insertedId });
-            return res.status(201).json(UpdatedReview);
+            const UpdatedReview = await mongodb.getDb().collection(collection).findOne({ _id: new ObjectId(id) });
+            return res.status(200).json(UpdatedReview);
         }
 
     } catch (error) {
@@ -157,7 +155,7 @@ const deleteReview = async (req,res,next) => {
 module.exports = {
     getReviews,
     getOneReview,
-    postReview,
+    createReview,
     updateReview,
     deleteReview,
     userReview,
