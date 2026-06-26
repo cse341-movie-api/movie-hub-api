@@ -28,7 +28,7 @@ const getOneReview = async (req,res,next) =>{
             .findOne({_id: new ObjectId(id)});
             
             
-        if (result.length === 0) {
+        if (!result) {
             return res.status(404).json({ error: 'The reviews is not found in the database' });
         }else {
             res.status(200).json(result)
@@ -81,8 +81,8 @@ const movieReview = async (req,res,next) =>{
 
 const createReview = async (req,res,next) => {
     const review = {
-        userId : new ObjectId(req.body.userId),
-        movieId :new ObjectId(req.body.movieId),
+        userId : req.body.userId,
+        movieId :req.body.movieId,
         rating : req.body.rating,
         reviewText: req.body.reviewText, 
         dateCreated:  new Date(), 
@@ -90,8 +90,8 @@ const createReview = async (req,res,next) => {
         isSpoiler: req.body.isSpoiler
     }
     try {
-        const db = await mongodb.getDb();
-        const result = db.collection(collection).insertOne(review);
+        const db = mongodb.getDb();
+        const result = await db.collection(collection).insertOne(review);
     
     if (result.acknowledged) {
         const createdReview = await mongodb.getDb().collection(collection).findOne({ _id: result.insertedId });
@@ -106,8 +106,8 @@ const createReview = async (req,res,next) => {
 const updateReview = async (req,res,next) => {
     const id = req.params.id;
     const review = {
-        userId : new ObjectId(req.body.userId),
-        movieId :new ObjectId(req.body.movieId),
+        userId : req.body.userId,
+        movieId : req.body.movieId,
         rating : req.body.rating,
         reviewText: req.body.reviewText, 
         dateCreated:  new Date(), 
@@ -144,7 +144,7 @@ const deleteReview = async (req,res,next) => {
             return res.status(404).json({error: 'the review could not be found in the database'}) 
         
         }else if (result.acknowledged) {
-            return res.status(204).send();
+            return res.status(204).json();
         }
     } catch (error) {
         next(error);
