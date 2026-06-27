@@ -162,7 +162,7 @@ const deleteWatchlistItem = async (req, res, next) => { // Add next to the funct
         });
     }
 
-    return res.status(204).send();
+    return res.status(204).json();
   } catch (error) {
     next(error); // Pass unexpected errors to the global error handler
   }
