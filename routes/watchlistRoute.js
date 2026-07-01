@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const watchlistController = require('../controllers/watchlistController');
+const { ensureAuthenticated } = require('../middleware/isAuthenticated');
 
 // GET all watchlist items
 router.get('/', /* #swagger.tags = ['Watchlist'] */ watchlistController.getAllWatchlistItems);
@@ -12,13 +13,13 @@ router.get('/user/:userId', /* #swagger.tags = ['Watchlist'] */ watchlistControl
 router.get('/:id', /* #swagger.tags = ['Watchlist'] */ watchlistController.getWatchlistItemById);
 
 // POST a new item to the watchlist
-router.post('/', /* #swagger.tags = ['Watchlist'] */ watchlistController.createWatchlistItem);
+router.post('/', /* #swagger.tags = ['Watchlist'] */ ensureAuthenticated, watchlistController.createWatchlistItem);
 
 // PUT (update) an existing watchlist item completely or partially
-router.put('/:id', /* #swagger.tags = ['Watchlist'] */ watchlistController.updateWatchlistItem);
+router.put('/:id', /* #swagger.tags = ['Watchlist'] */ ensureAuthenticated, watchlistController.updateWatchlistItem);
 
 // DELETE an item from the watchlist
-router.delete('/:id', /* #swagger.tags = ['Watchlist'] */ watchlistController.deleteWatchlistItem);
+router.delete('/:id', /* #swagger.tags = ['Watchlist'] */ ensureAuthenticated, watchlistController.deleteWatchlistItem);
 
 
 module.exports = router;
