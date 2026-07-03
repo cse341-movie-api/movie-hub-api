@@ -5,7 +5,7 @@ const app = express();
 const mongodb = require('./db/connect');
 const port = process.env.PORT || 8080;
 const cors = require('cors');
-const passport = require('passport');
+const passport = require('./config/passport');
 
 app.use(cors());
 app.use(express.json());
