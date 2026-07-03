@@ -5,13 +5,12 @@ const app = express();
 const mongodb = require('./db/connect');
 const port = process.env.PORT || 8080;
 const cors = require('cors');
-const passport = require('./config/passport');
+const passport = require('passport');
+require('./config/passport');
 
 app.use(cors());
 app.use(express.json());
-
 app.use(passport.initialize());
-
 app.use('/', require('./routes/index.js'));
 
 app.use((err, req, res, next) => {
