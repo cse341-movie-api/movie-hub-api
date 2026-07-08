@@ -11,3 +11,7 @@ const {
     userReview,
     movieReview
 }  = require('../controllers/reviewsController');
+
+// Initializing standalone Express application specifically for testing
+const app = express();
+app.use(express.json());
