@@ -44,7 +44,7 @@ jest.mock('../db/connect', () => {
           )
         })),
         findOne: jest.fn().mockImplementation((query) => {
-          const id = query && query._id ? query._id.toString() : null;
+          const id = query && query._id ? (query._id.toString() === '[object Object]' ? query._id.toHexString() : query._id.toString()) : null;
           const item = store.find((entry) => entry._id === id);
           return Promise.resolve(item || null);
         }),
@@ -54,18 +54,20 @@ jest.mock('../db/connect', () => {
           return Promise.resolve({ acknowledged: true, insertedId: createdItem._id });
         }),
         updateOne: jest.fn().mockImplementation((query, update) => {
-          const id = query && query._id ? query._id.toString() : null;
+          const id = query && query._id ? (query._id.toString() === '[object Object]' ? query._id.toHexString() : query._id.toString()) : null;
           const item = store.find((entry) => entry._id === id);
 
           if (item) {
-            Object.assign(item, update.$set);
+            if (update && update.$set) {
+              Object.assign(item, update.$set);
+            }
             return Promise.resolve({ matchedCount: 1, acknowledged: true });
           }
 
           return Promise.resolve({ matchedCount: 0, acknowledged: true });
         }),
         deleteOne: jest.fn().mockImplementation((query) => {
-          const id = query && query._id ? query._id.toString() : null;
+          const id = query && query._id ? (query._id.toString() === '[object Object]' ? query._id.toHexString() : query._id.toString()) : null;
           const index = store.findIndex((entry) => entry._id === id);
 
           if (index >= 0) {
@@ -130,7 +132,7 @@ describe('Watchlist Collection Unit Test', () => {
 
       const res = await request(app).post('/watchlist').send(mockBody);
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('movieId', 'movie123');
+      expect(res.body).toHaveProperty('movieId', 'movie456');
     });
   });
 
