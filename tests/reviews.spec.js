@@ -24,3 +24,42 @@ app.get('/movie/:movieid', movieReview);
 app.post('/', createReview);
 app.put('/:id', updateReview);
 app.delete('/:id', deleteReview);
+
+jest.mock('../db/connect', () => ({
+    getDb: () => ({
+        collection: () => ({
+            findOne: jest.fn().mockImplementation((query) => {
+                if (query._id) {
+                    return Promise.resolve({
+                        _id: '6a3c3951ecc7db183386198e',
+                        userId: '665f8a1b2c3d4e5f6a7b8c9d',
+                        movieId: '573a1397f29313caabce8783',
+                        rating: 5,
+                        reviewText: 'An absolute classic! The storytelling is top-tier.',
+                        dateCreated: '2026-06-04T14:30:00Z',
+                        authorName: 'Jane Doe',
+                        isSpoiler: false
+                    });
+                }
+                return Promise.resolve(null); // Emulates document not found
+            }),
+            find: () => ({
+                toArray: () => Promise.resolve([{ email: 'rforreseter@example.com', displayName: 'Robert Forrester' }
+                ])
+            }),
+            insertOne: jest.fn().mockResolvedValue({ acknowledged: true, insertedId: '6a3c3951ecc7db183386198e' }),
+            updateOne: jest.fn().mockImplementation((query) => {
+                if (query._id && query._id.toString() === '6a3c3951ecc7db183386198e') {
+                    return Promise.resolve({ matchedCount: 1, acknowledged: true });
+                }
+                return Promise.resolve({ matchedCount: 0, acknowledged: true });
+            }),
+            deleteOne: jest.fn().mockImplementation((query) => {
+                if (query._id && query._id.toString() === '6a3c3951ecc7db183386198e') {
+                    return Promise.resolve({ deletedCount: 1 });
+                }
+                return Promise.resolve({ deletedCount: 0 });
+            })
+        })
+    })
+}));
