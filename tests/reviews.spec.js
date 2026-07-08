@@ -44,7 +44,16 @@ jest.mock('../db/connect', () => ({
                 return Promise.resolve(null); // Emulates document not found
             }),
             find: () => ({
-                toArray: () => Promise.resolve([{ email: 'rforreseter@example.com', displayName: 'Robert Forrester' }
+                toArray: () => Promise.resolve([{
+                        _id: '6a3c3951ecc7db183386198e',
+                        userId: '665f8a1b2c3d4e5f6a7b8c9d',
+                        movieId: '573a1397f29313caabce8783',
+                        rating: 5,
+                        reviewText: 'An absolute classic! The storytelling is top-tier.',
+                        dateCreated: '2026-06-04T14:30:00Z',
+                        authorName: 'Jane Doe',
+                        isSpoiler: false
+                    }
                 ])
             }),
             insertOne: jest.fn().mockResolvedValue({ acknowledged: true, insertedId: '6a3c3951ecc7db183386198e' }),
@@ -63,3 +72,14 @@ jest.mock('../db/connect', () => ({
         })
     })
 }));
+
+describe('Reviews Collections Unit Test', () =>{
+    //test getReviews
+    describe('GET /',() =>{
+        it('should return 200 and an array containing all application reviews',async () => {
+            const res = await request(app).get('/');
+            expect(res.status).toBe(200);
+            expect(Array.isArray(res.body)).toBe(true);
+        })
+    })
+})
