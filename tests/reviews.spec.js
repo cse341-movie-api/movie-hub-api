@@ -75,11 +75,19 @@ jest.mock('../db/connect', () => ({
 
 describe('Reviews Collections Unit Test', () =>{
     //test getReviews
-    describe('GET /',() =>{
+    describe('GET /reviews',() =>{
         it('should return 200 and an array containing all application reviews',async () => {
             const res = await request(app).get('/');
             expect(res.status).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
         })
     })
+    describe('GET /reviews/:id', () =>{
+        it('should return 200 and a review object when creating data succeeds', async () => {
+            const res = await request(app).get('/6a3c3951ecc7db183386198e')
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('_id', '6a3c3951ecc7db183386198e');
+        })
+    })
+    
 })
