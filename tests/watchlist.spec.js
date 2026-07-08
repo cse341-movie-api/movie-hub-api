@@ -32,6 +32,7 @@ jest.mock('../db/connect', () => {
       priority: 'Medium'
     }
   ];
+  let lastInsertedItem = null;
 
   return {
     getDb: () => ({
@@ -46,10 +47,17 @@ jest.mock('../db/connect', () => {
         findOne: jest.fn().mockImplementation((query) => {
           const id = query && query._id ? (query._id.toString() === '[object Object]' ? query._id.toHexString() : query._id.toString()) : null;
           const item = store.find((entry) => entry._id === id);
-          return Promise.resolve(item || null);
+          if (item) {
+            return Promise.resolve(item);
+          }
+          if (lastInsertedItem && lastInsertedItem._id === id) {
+            return Promise.resolve(lastInsertedItem);
+          }
+          return Promise.resolve(null);
         }),
         insertOne: jest.fn().mockImplementation((item) => {
-          const createdItem = { ...item, _id: '507f1f77bcf86cd799439011' };
+          const createdItem = { ...item, _id: '507f1f77bcf86cd799439012' };
+          lastInsertedItem = createdItem;
           store.push(createdItem);
           return Promise.resolve({ acknowledged: true, insertedId: createdItem._id });
         }),
