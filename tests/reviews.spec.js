@@ -85,7 +85,7 @@ jest.mock('../db/connect', () => ({
                 };
             }),
             insertOne: jest.fn().mockResolvedValue({ acknowledged: true, insertedId: '6a3c3951ecc7db183386198e' }),
-            replaceOne: jest.fn().mockImplementation((query = {}) => {
+            updateOne: jest.fn().mockImplementation((query = {}) => {
                 if (query._id && query._id.toString() === '6a3c3951ecc7db183386198e') {
                     return Promise.resolve({ matchedCount: 1, acknowledged: true });
                 }
