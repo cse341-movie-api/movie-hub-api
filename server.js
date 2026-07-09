@@ -26,8 +26,12 @@ mongodb.connectToDatabase((err) => {
     if (err) {
         console.log(err);
     } else {
-        app.listen(port, () => {
-            console.log(`app listening on http://localhost:${port}`);
-        });
+        if (process.env.NODE_ENV !== 'test') {
+            app.listen(port, () => {
+                console.log(`app listening on http://localhost:${port}`);
+            });
+        }
     }
 });
+
+module.exports = app;
