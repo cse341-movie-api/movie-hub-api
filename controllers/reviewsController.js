@@ -121,7 +121,7 @@ const updateReview = async (req,res,next) => {
             .collection(collection)
             .replaceOne({_id:new ObjectId(id)},review);
         if (result.matchedCount === 0){
-            return res.status(404).json({error: 'the review could not be found in the database'})
+            return res.status(404).json({error: 'the review could not be found in the database.'})
         
         }else if (result.acknowledged) {
             const UpdatedReview = await mongodb.getDb().collection(collection).findOne({ _id: new ObjectId(id) });
@@ -141,7 +141,7 @@ const deleteReview = async (req,res,next) => {
             .collection(collection)
             .deleteOne({_id:new ObjectId(id)});
         if (result.deletedCount === 0){
-            return res.status(404).json({error: 'the review could not be found in the database'}) 
+            return res.status(404).json({error: 'the review could not be found in the database.'}) 
         
         }else if (result.acknowledged) {
             return res.status(204).json();

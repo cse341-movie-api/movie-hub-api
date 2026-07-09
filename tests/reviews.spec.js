@@ -113,7 +113,6 @@ describe('Reviews Collections Unit Test', () =>{
     describe('PUT /reviews/:id',()=>{
         it('should return 200 and full review data sheet if document updates correctly', async () => {
             const mockUpdate = { 
-                _id: '6a3c3951ecc7db183386198e',
                 userId: '665f8a1b2c3d4e5f6a7b8c9d',
                 movieId: '573a1397f29313caabce8783',
                 rating: 5,
@@ -127,14 +126,33 @@ describe('Reviews Collections Unit Test', () =>{
             expect(res.status).toBe(200);
         });
         
-        // it('should return 404 if trying to update an invalid/non-existent user ID', async () => {
-        //     const mockUpdate = { displayName: 'Bobs Uruncle' };
-        //     const res = await request(app).put('/review/555f8a1b2c3d4e5f6a7b8c9d').send(mockUpdate);
-        //     expect(res.status).toBe(404);
-        //     expect(res.body).toHaveProperty('message', 'User not found. No update occurred.');
-        // });
+        it('should return 404 if trying to update an invalid/non-existent user ID', async () => {
+            const mockUpdate = { 
+                userId: '665f8a1b2c3d4e5f6a7b8c9d',
+                movieId: '573a1397f29313caabce8783',
+                rating: 5,
+                reviewText: 'An absolute classic! The storytelling is top-tier.',
+                dateCreated: '2026-06-04T14:30:00Z',
+                authorName: 'Omarlin Parra',
+                isSpoiler: false
+            };
+            const res = await request(app).put('/555f8a1b2c3d4e5f6a7b8c9d').send(mockUpdate);
+            expect(res.status).toBe(404);
+            expect(res.body).toHaveProperty('error', 'the review could not be found in the database.');
+        });
     })
     //deleteReview
-    //describe('DELETE /reviews',()=>{})
+    describe('DELETE /reviews/:id', () => {
+            it('should return 204 status indicating no content when deletion is successful', async () => {
+                const res = await request(app).delete('/6a3c3951ecc7db183386198e');
+                expect(res.status).toBe(204);
+            });
+    
+            it('should return 404 status if target database record cannot be found to delete', async () => {
+                const res = await request(app).delete('/555f8a1b2c3d4e5f6a7b8c9d');
+                expect(res.status).toBe(404);
+                expect(res.body).toHaveProperty('error', 'the review could not be found in the database.');
+            });
+        });
 
-})
+});
