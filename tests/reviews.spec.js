@@ -57,7 +57,7 @@ jest.mock('../db/connect', () => ({
                 ])
             }),
             insertOne: jest.fn().mockResolvedValue({ acknowledged: true, insertedId: '6a3c3951ecc7db183386198e' }),
-            updateOne: jest.fn().mockImplementation((query) => {
+            replaceOne: jest.fn().mockImplementation((query) => {
                 if (query._id && query._id.toString() === '6a3c3951ecc7db183386198e') {
                     return Promise.resolve({ matchedCount: 1, acknowledged: true });
                 }
@@ -82,6 +82,7 @@ describe('Reviews Collections Unit Test', () =>{
             expect(Array.isArray(res.body)).toBe(true);
         })
     })
+    // Test getOneReview
     describe('GET /reviews/:id', () =>{
         it('should return 200 and a review object when creating data succeeds', async () => {
             const res = await request(app).get('/6a3c3951ecc7db183386198e')
@@ -89,5 +90,51 @@ describe('Reviews Collections Unit Test', () =>{
             expect(res.body).toHaveProperty('_id', '6a3c3951ecc7db183386198e');
         })
     })
-    
+    //userReview
+    //movieReview
+    //createReview
+    describe('POST /reviews',()=>{
+        it('should return 201 and review object when creattion data succceeds', async () => {
+            const mockBody = {
+                userId: '665f8a1b2c3d4e5f6a7b8c9d',
+                movieId: '573a1397f29313caabce8783',
+                rating: 5,
+                reviewText: 'An absolute classic! The storytelling is top-tier.',
+                dateCreated: '2026-06-04T14:30:00Z',
+                authorName: 'Jane Doe',
+                isSpoiler: false
+            }
+            const res = await request(app).post('/').send(mockBody);
+            expect(res.status).toBe(201);
+            expect(res.body).toHaveProperty('_id', '6a3c3951ecc7db183386198e');
+        })
+    })
+    //updateReview
+    describe('PUT /reviews/:id',()=>{
+        it('should return 200 and full review data sheet if document updates correctly', async () => {
+            const mockUpdate = { 
+                _id: '6a3c3951ecc7db183386198e',
+                userId: '665f8a1b2c3d4e5f6a7b8c9d',
+                movieId: '573a1397f29313caabce8783',
+                rating: 5,
+                reviewText: 'An absolute classic! The storytelling is top-tier.',
+                dateCreated: '2026-06-04T14:30:00Z',
+                authorName: 'Omarlin Parra',
+                isSpoiler: false
+            };
+            
+            const res = await request(app).put('/6a3c3951ecc7db183386198e').send(mockUpdate);
+            expect(res.status).toBe(200);
+        });
+        
+        // it('should return 404 if trying to update an invalid/non-existent user ID', async () => {
+        //     const mockUpdate = { displayName: 'Bobs Uruncle' };
+        //     const res = await request(app).put('/review/555f8a1b2c3d4e5f6a7b8c9d').send(mockUpdate);
+        //     expect(res.status).toBe(404);
+        //     expect(res.body).toHaveProperty('message', 'User not found. No update occurred.');
+        // });
+    })
+    //deleteReview
+    //describe('DELETE /reviews',()=>{})
+
 })
