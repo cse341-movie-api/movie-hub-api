@@ -101,8 +101,9 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 app.use((err, req, res, next) => {
-    console.error("System error stack trace: ", err.stack);
-
+    if (process.env.NODE_ENV !== 'test') {
+        console.error("System error stack trace: ", err.stack);
+    }
     res.status(500).json({
         message: "An internal server error occurred.",
         error: err.message
