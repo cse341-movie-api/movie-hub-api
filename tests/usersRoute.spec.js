@@ -3,10 +3,7 @@ const express = require('express');
 
 jest.mock('../controllers/usersController', () => ({
     getUserByEmail: jest.fn((req, res) => {
-        res.status(200).json({
-            handler: 'getUserByEmail',
-            email: req.params.email
-        });
+        res.status(200).json({ handler: 'getUserByEmail', email: req.params.email });
     }),
 
     getAllUsers: jest.fn((req, res) => {
