@@ -80,6 +80,7 @@ const validateWatchlist = (req, res, next) => {
 };
 
 const validateWatchlistId = (req, res, next) => {
+    console.log("=== VALIDATE WATCHLIST ID MIDDLEWARE HIT ==="); // For testing remove later
     if (!req.params.id || !ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
             message: "Must use a valid watchlist ID to find an item."
