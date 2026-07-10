@@ -29,7 +29,7 @@ const getOneReview = async (req,res,next) =>{
             
             
         if (!result) {
-            return res.status(404).json({ error: 'The reviews is not found in the database' });
+            return res.status(404).json({ error: 'The review was not found in the database.' });
         }else {
             res.status(200).json(result)
         }
@@ -49,7 +49,7 @@ const userReview = async (req,res,next) =>{
             
             
         if (result.length === 0) {
-            return res.status(404).json({ error: 'The reviews is not found in the database' });
+            return res.status(404).json({ error: 'The review was not found in the database.' });
         }else {
             res.status(200).json(result)
         }
@@ -69,7 +69,7 @@ const movieReview = async (req,res,next) =>{
             
             
         if (result.length === 0) {
-            return res.status(404).json({ error: 'The reviews is not found in the database' });
+            return res.status(404).json({ error: 'The review was not found in the database.' });
         }else {
             res.status(200).json(result)
         }
@@ -105,23 +105,32 @@ const createReview = async (req,res,next) => {
 }
 const updateReview = async (req,res,next) => {
     const id = req.params.id;
-    const review = {
-        userId : req.body.userId,
-        movieId : req.body.movieId,
-        rating : req.body.rating,
-        reviewText: req.body.reviewText, 
-        dateCreated:  new Date(), 
-        authorName: req.body.authorName, 
-        isSpoiler: req.body.isSpoiler 
-    };
+    const {
+        userId,
+        movieId,
+        rating ,
+        reviewText,
+        authorName,
+        isSpoiler
+    } = req.body;
 
     try {
         const result = await mongodb
             .getDb()
             .collection(collection)
-            .replaceOne({_id:new ObjectId(id)},review);
+            .updateOne({_id:new ObjectId(id)},
+        {
+            $set:{
+                userId,
+                movieId,
+                rating,
+                reviewText, 
+                authorName, 
+                isSpoiler
+            }
+        });
         if (result.matchedCount === 0){
-            return res.status(404).json({error: 'the review could not be found in the database'})
+            return res.status(404).json({error: 'the review could not be found in the database.'})
         
         }else if (result.acknowledged) {
             const UpdatedReview = await mongodb.getDb().collection(collection).findOne({ _id: new ObjectId(id) });
@@ -141,7 +150,7 @@ const deleteReview = async (req,res,next) => {
             .collection(collection)
             .deleteOne({_id:new ObjectId(id)});
         if (result.deletedCount === 0){
-            return res.status(404).json({error: 'the review could not be found in the database'}) 
+            return res.status(404).json({error: 'the review could not be found in the database.'}) 
         
         }else if (result.acknowledged) {
             return res.status(204).json();
