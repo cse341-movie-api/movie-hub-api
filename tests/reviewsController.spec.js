@@ -9,14 +9,14 @@ const {
     deleteReview,
     userReview,
     movieReview
-}  = require('../controllers/reviewsController');
+} = require('../controllers/reviewsController');
 
 // Initializing standalone Express application specifically for testing
 const app = express();
 app.use(express.json());
 
 // Mapping controller functions to matching endpoints
-app.get('/',getReviews);
+app.get('/', getReviews);
 app.get('/:id', getOneReview);
 app.get('/user/:userId', userReview);
 app.get('/movie/:movieId', movieReview);
@@ -75,12 +75,12 @@ jest.mock('../db/connect', () => ({
             find: jest.fn().mockImplementation((query = {}) => {
                 let filtered = reviews;
                 if (query.userId) {
-                    filtered = reviews.filter(r=> r.userId === query.userId.toString())
+                    filtered = reviews.filter(r => r.userId === query.userId.toString())
                 };
                 if (query.movieId) {
-                    filtered = reviews.filter(r=> r.movieId === query.movieId.toString())
+                    filtered = reviews.filter(r => r.movieId === query.movieId.toString())
                 };
-                return{
+                return {
                     toArray: () => Promise.resolve(filtered)
                 };
             }),
@@ -101,17 +101,17 @@ jest.mock('../db/connect', () => ({
     })
 }));
 
-describe('Reviews Collections Unit Test', () =>{
+describe('Reviews Collections Unit Test', () => {
     //test getReviews
-    describe('GET /reviews',() =>{
-        it('should return 200 and an array containing all application reviews',async () => {
+    describe('GET /reviews', () => {
+        it('should return 200 and an array containing all application reviews', async () => {
             const res = await request(app).get('/');
             expect(res.status).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
         })
     })
     // Test getOneReview
-    describe('GET /reviews/:id', () =>{
+    describe('GET /reviews/:id', () => {
         it('should return 200 and a review object when creating data succeeds', async () => {
             const res = await request(app).get('/6a3c3951ecc7db183386198e')
             expect(res.status).toBe(200);
@@ -119,7 +119,7 @@ describe('Reviews Collections Unit Test', () =>{
         })
     })
     //userReview
-    describe('GET /user/:userId', () =>{
+    describe('GET /user/:userId', () => {
         it('should return 200 and a review object when creating data succeeds', async () => {
             const res = await request(app).get('/user/6a3c3951ecc7db183386198e')
             expect(res.status).toBe(200);
@@ -127,16 +127,16 @@ describe('Reviews Collections Unit Test', () =>{
         })
     })
     //movieReview
-    describe('GET /movie/:movieId', () =>{
+    describe('GET /movie/:movieId', () => {
         it('should return 200 and a review object when creating data succeeds', async () => {
             const res = await request(app).get('/movie/573a1397f29313caabce8783')
             expect(res.status).toBe(200);
             expect(res.body[0]).toHaveProperty('movieId', '573a1397f29313caabce8783');
         })
     })
-    
+
     //createReview
-    describe('POST /reviews',()=>{
+    describe('POST /reviews', () => {
         it('should return 201 and review object when creattion data succceeds', async () => {
             const mockBody = {
                 userId: '665f8a1b2c3d4e5f6a7b8c9d',
@@ -153,9 +153,9 @@ describe('Reviews Collections Unit Test', () =>{
         })
     })
     //updateReview
-    describe('PUT /reviews/:id',()=>{
+    describe('PUT /reviews/:id', () => {
         it('should return 200 and full review data sheet if document updates correctly', async () => {
-            const mockUpdate = { 
+            const mockUpdate = {
                 userId: '665f8a1b2c3d4e5f6a7b8c9d',
                 movieId: '573a1397f29313caabce8783',
                 rating: 5,
@@ -164,13 +164,13 @@ describe('Reviews Collections Unit Test', () =>{
                 authorName: 'Omarlin Parra',
                 isSpoiler: false
             };
-            
+
             const res = await request(app).put('/6a3c3951ecc7db183386198e').send(mockUpdate);
             expect(res.status).toBe(200);
         });
-        
+
         it('should return 404 if trying to update an invalid/non-existent user ID', async () => {
-            const mockUpdate = { 
+            const mockUpdate = {
                 userId: '665f8a1b2c3d4e5f6a7b8c9d',
                 movieId: '573a1397f29313caabce8783',
                 rating: 5,
@@ -186,16 +186,16 @@ describe('Reviews Collections Unit Test', () =>{
     })
     //deleteReview
     describe('DELETE /reviews/:id', () => {
-            it('should return 204 status indicating no content when deletion is successful', async () => {
-                const res = await request(app).delete('/6a3c3951ecc7db183386198e');
-                expect(res.status).toBe(204);
-            });
-    
-            it('should return 404 status if target database record cannot be found to delete', async () => {
-                const res = await request(app).delete('/555f8a1b2c3d4e5f6a7b8c9d');
-                expect(res.status).toBe(404);
-                expect(res.body).toHaveProperty('error', 'the review could not be found in the database.');
-            });
+        it('should return 204 status indicating no content when deletion is successful', async () => {
+            const res = await request(app).delete('/6a3c3951ecc7db183386198e');
+            expect(res.status).toBe(204);
         });
+
+        it('should return 404 status if target database record cannot be found to delete', async () => {
+            const res = await request(app).delete('/555f8a1b2c3d4e5f6a7b8c9d');
+            expect(res.status).toBe(404);
+            expect(res.body).toHaveProperty('error', 'the review could not be found in the database.');
+        });
+    });
 
 });
