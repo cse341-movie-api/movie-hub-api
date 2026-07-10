@@ -20,9 +20,6 @@ const getAllWatchlistItems = async (req, res, next) => { // Add next to the func
 // Get a single watchlist item by ID
 const getWatchlistItemById = async (req, res, next) => { // Add next to the function declaration
   try {
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Must use a valid watchlist ID to find an item.' });
-    }
     const watchlistId = new ObjectId(req.params.id);
     const result = await mongodb
         .getDb()
@@ -102,9 +99,6 @@ const createWatchlistItem = async (req, res, next) => { // Add next to the funct
 // Update an existing watchlist item
 const updateWatchlistItem = async (req, res, next) => { // Add next to the function declaration
   try {
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Must use a valid watchlist ID to update an item.' });
-    }
     const watchlistId = new ObjectId(req.params.id);
     
     const { userId, movieId, dateAdded, status, priority, reminderSet, notes } = req.body;
@@ -147,9 +141,6 @@ const updateWatchlistItem = async (req, res, next) => { // Add next to the funct
 // Delete a watchlist item
 const deleteWatchlistItem = async (req, res, next) => { // Add next to the function declaration
   try {
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Must use a valid watchlist ID to delete an item.' });
-    }
     const watchlistId = new ObjectId(req.params.id);
     const result = await mongodb
         .getDb()
