@@ -79,9 +79,21 @@ const validateWatchlist = (req, res, next) => {
     next();
 };
 
+const validateIdParam = (paramName = 'id', customMessage = 'Invalid ID format.') => {
+    return (req, res, next) => {
+        const idValue = req.params[paramName];
+
+        if (!idValue || !ObjectId.isValid(idValue)) {
+            return res.status(400).json({ message: customMessage });
+        }
+        next();
+    };
+};
+
 module.exports = {
     validateUser,
     validateMovie,
     validateReview,
-    validateWatchlist
+    validateWatchlist,
+    validateIdParam
 };
