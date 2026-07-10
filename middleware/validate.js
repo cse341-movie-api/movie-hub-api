@@ -79,15 +79,40 @@ const validateWatchlist = (req, res, next) => {
     next();
 };
 
-const validateIdParam = (paramName = 'id', customMessage = 'Invalid ID format.') => {
-    return (req, res, next) => {
-        const idValue = req.params[paramName];
+const validateWatchlistId = (req, res, next) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+            message: "Must use a valid watchlist ID to find an item."
+        });
+    }
+    next();
+};
 
-        if (!idValue || !ObjectId.isValid(idValue)) {
-            return res.status(400).json({ message: customMessage });
-        }
-        next();
-    };
+const validateWatchlistUserId = (req, res, next) => {
+    if (!req.params.userId || !ObjectId.isValid(req.params.userId)) {
+        return res.status(400).json({
+            message: "Must provide a valid user ID to find watchlist items."
+        });
+    }
+    next();
+};
+
+const validateUserId = (req, res, next) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+            message: "Must use a valid user ID to find an item."
+        });
+    }
+    next();
+};
+
+const validateReviewId = (req, res, next) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+            message: "Must use a valid review ID to find an item."
+        });
+    }
+    next();
 };
 
 module.exports = {
@@ -95,5 +120,8 @@ module.exports = {
     validateMovie,
     validateReview,
     validateWatchlist,
-    validateIdParam
+    validateWatchlistId,
+    validateWatchlistUserId,
+    validateUserId,
+    validateReviewId
 };

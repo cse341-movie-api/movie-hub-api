@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/usersController');
-const {ensureAuthenticated} = require('../middleware/isAuthenticated');
+const { ensureAuthenticated } = require('../middleware/isAuthenticated');
+const { validateUser, validateUserId } = require('../middleware/validate');
 
 router.get('/email/:email', /* #swagger.tags = ['Users']*/ controller.getUserByEmail);
 router.get('/', /* #swagger.tags = ['Users']*/ controller.getAllUsers);
-router.get('/:id', /* #swagger.tags = ['Users']*/ controller.getOneUser);
-router.post('/', /* #swagger.tags = ['Users']*/ ensureAuthenticated, controller.createUser);
-router.put('/:id', /* #swagger.tags = ['Users']*/ ensureAuthenticated, controller.updateUser);
-router.delete('/:id', /* #swagger.tags = ['Users']*/ ensureAuthenticated, controller.deleteUser);
+router.get('/:id', /* #swagger.tags = ['Users']*/ validateUserId, controller.getOneUser);
+router.post('/', /* #swagger.tags = ['Users']*/ ensureAuthenticated, validateUser, controller.createUser);
+router.put('/:id', /* #swagger.tags = ['Users']*/ ensureAuthenticated, validateUserId, validateUser, controller.updateUser);
+router.delete('/:id', /* #swagger.tags = ['Users']*/ ensureAuthenticated, validateUserId, controller.deleteUser);
 
 
 module.exports = router;
