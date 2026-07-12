@@ -100,7 +100,6 @@ const updateMovie = async (req, res, next) => {
       { _id: new ObjectId(id) },
       { $set: movie },
     );
-    console.log(result);
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: 'Movie not found.' });
