@@ -14,13 +14,17 @@ const userSchema = Joi.object({
 }).unknown(true);
 
 const movieSchema = Joi.object({
-    title: Joi.string().required(),
-    director: Joi.string().required(),
-    releaseYear: Joi.number().integer().min(1800).max(new Date().getFullYear() + 5).required(),
-    genre: Joi.array().items(Joi.string()).required(),
-    runtimeMinutes: Joi.number().integer().min(1).required(),
-    synopsis: Joi.string().required(),
-    rating: Joi.string().valid('G', 'PG', 'PG-13', 'R', 'NC-17', 'Not Rated').required()
+    title: Joi.string().trim().required(),
+    year: Joi.number().integer().min(1800).max(new Date().getFullYear() + 5).required(),
+    plot: Joi.string().trim().required(),
+    genres: Joi.array().items(Joi.string().trim()).min(1).required(),
+    runtime: Joi.number().integer().min(1).required(),
+    rated: Joi.string().valid('G', 'PG', 'PG-13', 'R', 'NC-17', 'Not Rated').required(),
+    cast: Joi.array().items(Joi.string().trim()).optional(),
+    poster: Joi.string().uri().optional().allow(''),
+    languages: Joi.array().items(Joi.string().trim()).optional(),
+    imdb: Joi.object({ rating: Joi.number().min(0).max(10).required() }).optional().allow(null),
+    rotten_tomatoes: Joi.object({ tomato_meter: Joi.number().integer().min(0).max(100).required() }).optional().allow(null)
 }).unknown(true);
 
 const reviewSchema = Joi.object({
@@ -115,9 +119,20 @@ const validateReviewId = (req, res, next) => {
     next();
 };
 
+const validateMovieId = (req, res, next) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+            message: "Must use a valid movie ID to find an item."
+        });
+    }
+
+    next();
+};
+
 module.exports = {
     validateUser,
     validateMovie,
+    validateMovieId,
     validateReview,
     validateWatchlist,
     validateWatchlistId,
