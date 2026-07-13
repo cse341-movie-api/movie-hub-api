@@ -2,29 +2,29 @@ const { ObjectId } = require('mongodb');
 const mongodb = require('../db/connect');
 
 // Get all watchlist items
-const getAllWatchlistItems = async (req, res, next) => { // Add next to the function declaration
+const getAllWatchlistItems = async (req, res, next) => {
   try {
     const result = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .find();
+      .getDb()
+      .collection('watchlist')
+      .find();
 
     const lists = await result.toArray();
 
     return res.status(200).json(lists);
   } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
+    next(error);
   }
 };
 
 // Get a single watchlist item by ID
-const getWatchlistItemById = async (req, res, next) => { // Add next to the function declaration
+const getWatchlistItemById = async (req, res, next) => {
   try {
     const watchlistId = new ObjectId(req.params.id);
     const result = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .findOne({ _id: watchlistId });
+      .getDb()
+      .collection('watchlist')
+      .findOne({ _id: watchlistId });
 
     if (!result) {
       return res.status(404).json({ message: 'Watchlist item not found.' });
@@ -32,7 +32,7 @@ const getWatchlistItemById = async (req, res, next) => { // Add next to the func
 
     return res.status(200).json(result);
   } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
+    next(error);
   }
 };
 
@@ -45,25 +45,25 @@ const getWatchlistItemsByUserId = async (req, res, next) => {
     }
 
     const result = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .find({ userId });
+      .getDb()
+      .collection('watchlist')
+      .find({ userId });
 
     const items = await result.toArray();
-    
+
     // Check if the array length is 0 (no items), if yes return 404 message
     if (items.length === 0) {
       return res.status(404).json({ message: 'No watchlist items were found for this user.' });
     }
-    
+
     return res.status(200).json(items);
   } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
+    next(error);
   }
 };
 
 // Create a new watchlist item
-const createWatchlistItem = async (req, res, next) => { // Add next to the function declaration
+const createWatchlistItem = async (req, res, next) => {
   try {
     const watchlistItem = {
       userId: req.body.userId,
@@ -76,86 +76,86 @@ const createWatchlistItem = async (req, res, next) => { // Add next to the funct
     };
 
     const result = await mongodb
+      .getDb()
+      .collection('watchlist')
+      .insertOne(watchlistItem);
+
+    if (result.acknowledged) {
+      const id = new ObjectId(result.insertedId);
+      const newWatchlistItem = await mongodb
         .getDb()
         .collection('watchlist')
-        .insertOne(watchlistItem);
-        
-    if (result.acknowledged) {
-        const id = new ObjectId(result.insertedId);
-        const newWatchlistItem = await mongodb
-            .getDb()
-            .collection('watchlist')
-            .findOne({ _id: id });
-        res.status(201).json(newWatchlistItem);
+        .findOne({ _id: id });
+      res.status(201).json(newWatchlistItem);
 
     } else {
       res.status(500).json({ message: 'Error occurred while creating the watchlist item.' });
     }
   } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
+    next(error);
   }
 };
 
 // Update an existing watchlist item
-const updateWatchlistItem = async (req, res, next) => { // Add next to the function declaration
+const updateWatchlistItem = async (req, res, next) => {
   try {
     const watchlistId = new ObjectId(req.params.id);
-    
+
     const { userId, movieId, dateAdded, status, priority, reminderSet, notes } = req.body;
 
     const result = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .updateOne(
-            { _id: watchlistId },
-            {
-                $set: {
-                    userId,
-                    movieId,
-                    dateAdded,
-                    status,
-                    priority,
-                    reminderSet,
-                    notes
-                }
-            }
-        );
+      .getDb()
+      .collection('watchlist')
+      .updateOne(
+        { _id: watchlistId },
+        {
+          $set: {
+            userId,
+            movieId,
+            dateAdded,
+            status,
+            priority,
+            reminderSet,
+            notes
+          }
+        }
+      );
 
     if (result.matchedCount === 0) {
-        return res.status(404).json({
-            message: 'Watchlist item not found.'
-        });
+      return res.status(404).json({
+        message: 'Watchlist item not found.'
+      });
     }
 
     const itemAfterUpdate = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .findOne({ _id: watchlistId });
+      .getDb()
+      .collection('watchlist')
+      .findOne({ _id: watchlistId });
 
     return res.status(200).json(itemAfterUpdate);
   } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
+    next(error);
   }
 };
 
 // Delete a watchlist item
-const deleteWatchlistItem = async (req, res, next) => { // Add next to the function declaration
+const deleteWatchlistItem = async (req, res, next) => {
   try {
     const watchlistId = new ObjectId(req.params.id);
     const result = await mongodb
-        .getDb()
-        .collection('watchlist')
-        .deleteOne({ _id: watchlistId });
+      .getDb()
+      .collection('watchlist')
+      .deleteOne({ _id: watchlistId });
 
     if (result.deletedCount === 0) {
-        return res.status(404).json({
-            message: 'Watchlist item not found.'
-        });
+      return res.status(404).json({
+        message: 'Watchlist item not found.'
+      });
     }
 
     return res.status(204).json();
   } catch (error) {
-    next(error); // Pass unexpected errors to the global error handler
+    next(error);
   }
 };
 
