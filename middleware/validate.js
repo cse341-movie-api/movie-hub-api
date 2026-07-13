@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
 const Joi = require('joi');
 
+// Joi schemas
 const userSchema = Joi.object({
     googleId: Joi.string().required(),
     displayName: Joi.string().required(),
@@ -51,6 +52,7 @@ const watchlistSchema = Joi.object({
     notes: Joi.string().optional().allow('')
 }).unknown(true);
 
+// Request body validation
 const validateUser = (req, res, next) => {
     const { error } = userSchema.validate(req.body, { errors: { wrap: { label: false } } });
     if (error) {
@@ -83,6 +85,7 @@ const validateWatchlist = (req, res, next) => {
     next();
 };
 
+// MongoDB ObjectId validation
 const validateWatchlistId = (req, res, next) => {
     if (!req.params.id || !ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
@@ -119,6 +122,26 @@ const validateReviewId = (req, res, next) => {
     next();
 };
 
+const validateReviewUserId = (req, res, next) => {
+    if (!req.params.userId || !ObjectId.isValid(req.params.userId)) {
+        return res.status(400).json({
+            message: 'Must provide a valid user ID to find reviews.'
+        });
+    }
+
+    next();
+};
+
+const validateReviewMovieId = (req, res, next) => {
+    if (!req.params.movieId || !ObjectId.isValid(req.params.movieId)) {
+        return res.status(400).json({
+            message: 'Must provide a valid movie ID to find reviews.'
+        });
+    }
+
+    next();
+};
+
 const validateMovieId = (req, res, next) => {
     if (!req.params.id || !ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
@@ -131,12 +154,14 @@ const validateMovieId = (req, res, next) => {
 
 module.exports = {
     validateUser,
+    validateUserId,
     validateMovie,
     validateMovieId,
     validateReview,
+    validateReviewId,
+    validateReviewUserId,
+    validateReviewMovieId,
     validateWatchlist,
     validateWatchlistId,
-    validateWatchlistUserId,
-    validateUserId,
-    validateReviewId
+    validateWatchlistUserId
 };
