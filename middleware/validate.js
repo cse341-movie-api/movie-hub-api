@@ -151,6 +151,7 @@ const validateMovieId = (req, res, next) => {
 
 module.exports = {
     validateUser,
+    validateUserId,
     validateMovie,
     validateMovieId,
     validateReview,
@@ -159,7 +160,5 @@ module.exports = {
     validateReviewMovieId,
     validateWatchlist,
     validateWatchlistId,
-    validateWatchlistUserId,
-    validateUserId,
-    validateReviewId
+    validateWatchlistUserId
 };
