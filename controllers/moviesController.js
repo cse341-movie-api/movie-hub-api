@@ -43,7 +43,6 @@ const getOneMovie = async (req, res, next) => {
  * @route POST /movies
  */
 const createMovie = async (req, res, next) => {
-  // TODO: Add validation
   const movie = {
     title: req.body.title,
     year: req.body.year,
@@ -76,7 +75,6 @@ const createMovie = async (req, res, next) => {
  * @route PUT /movies/:id
  */
 const updateMovie = async (req, res, next) => {
-  // TODO: Add validation
   const id = req.params.id;
 
   const movie = {
