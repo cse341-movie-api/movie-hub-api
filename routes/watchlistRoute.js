@@ -14,13 +14,13 @@ router.get('/user/:userId', /* #swagger.tags = ['Watchlist'] */ validateWatchlis
 router.get('/:id', /* #swagger.tags = ['Watchlist'] */ validateWatchlistId, watchlistController.getWatchlistItemById);
 
 // POST a new item to the watchlist
-router.post('/', /* #swagger.tags = ['Watchlist'] */ ensureAuthenticated, validateWatchlist, watchlistController.createWatchlistItem);
+router.post('/', /* #swagger.tags = ['Watchlist'] #swagger.security = [{ "OAuth2HeaderKey": [] }] */ ensureAuthenticated, validateWatchlist, watchlistController.createWatchlistItem);
 
 // PUT (update) an existing watchlist item completely or partially
-router.put('/:id', /* #swagger.tags = ['Watchlist'] */ ensureAuthenticated, validateWatchlistId, validateWatchlist, watchlistController.updateWatchlistItem);
+router.put('/:id', /* #swagger.tags = ['Watchlist'] #swagger.security = [{ "OAuth2HeaderKey": [] }] */ ensureAuthenticated, validateWatchlistId, validateWatchlist, watchlistController.updateWatchlistItem);
 
 // DELETE an item from the watchlist
-router.delete('/:id', /* #swagger.tags = ['Watchlist'] */ ensureAuthenticated, validateWatchlistId, watchlistController.deleteWatchlistItem);
+router.delete('/:id', /* #swagger.tags = ['Watchlist'] #swagger.security = [{ "OAuth2HeaderKey": [] }] */ ensureAuthenticated, validateWatchlistId, watchlistController.deleteWatchlistItem);
 
 
 module.exports = router;
